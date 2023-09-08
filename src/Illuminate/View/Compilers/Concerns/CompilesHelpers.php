@@ -3,6 +3,7 @@
 namespace Illuminate\View\Compilers\Concerns;
 
 use Illuminate\Foundation\Vite;
+use Illuminate\Validation\HtmlValidator;
 
 trait CompilesHelpers
 {
@@ -74,5 +75,20 @@ trait CompilesHelpers
         $class = Vite::class;
 
         return "<?php echo app('$class')->reactRefresh(); ?>";
+    }
+
+    /**
+     * Compile the "rules" statements into valid PHP.
+     *
+     * @param  string|null  $arguments
+     * @return string
+     */
+    protected function compileRules($arguments)
+    {
+        $arguments ??= '()';
+
+        $class = HtmlValidator::class;
+
+        return "<?php echo app('$class')->toHtmlAttributes{$arguments}; ?>";
     }
 }

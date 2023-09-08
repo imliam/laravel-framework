@@ -15,6 +15,7 @@ use Illuminate\Support\Fluent;
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\Str;
 use Illuminate\Support\ValidatedInput;
+use Illuminate\View\ComponentAttributeBag;
 use InvalidArgumentException;
 use RuntimeException;
 use stdClass;
