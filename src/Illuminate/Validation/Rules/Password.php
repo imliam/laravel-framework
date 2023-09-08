@@ -2,17 +2,18 @@
 
 namespace Illuminate\Validation\Rules;
 
-use Illuminate\Container\Container;
-use Illuminate\Contracts\Validation\DataAwareRule;
-use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Contracts\Validation\UncompromisedVerifier;
-use Illuminate\Contracts\Validation\ValidatorAwareRule;
 use Illuminate\Support\Arr;
+use InvalidArgumentException;
+use Illuminate\Container\Container;
+use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Traits\Conditionable;
-use InvalidArgumentException;
+use Illuminate\Validation\HtmlValidationRule;
+use Illuminate\Contracts\Validation\DataAwareRule;
+use Illuminate\Contracts\Validation\ValidatorAwareRule;
+use Illuminate\Contracts\Validation\UncompromisedVerifier;
 
-class Password implements Rule, DataAwareRule, ValidatorAwareRule
+class Password implements Rule, DataAwareRule, ValidatorAwareRule, HtmlValidationRule
 {
     use Conditionable;
 
@@ -391,5 +392,39 @@ class Password implements Rule, DataAwareRule, ValidatorAwareRule
         $this->messages = array_merge($this->messages, $messages);
 
         return false;
+    }
+
+    /**
+     * @see https://developer.apple.com/password-rules/
+     */
+    public function toHtmlAttributes(): array
+    {
+        $passwordRules = [];
+
+        if ($this->min) {
+            $passwordRules[] = 'minlength: '.$this->min.';';
+        }
+
+        if ($this->numbers) {
+            $passwordRules[] = 'required: digit;';
+        }
+
+        if ($this->letters) {
+            $passwordRules[] = 'required: letters;';
+        }
+
+        if ($this->mixedCase) {
+            $passwordRules[] = 'required: lower;';
+            $passwordRules[] = 'required: upper;';
+        }
+
+        if ($this->symbols) {
+            $passwordRules[] = 'required: special;';
+        }
+
+        return [
+            'passwordrules' => join(' ', $passwordRules),
+            'minlength' => $this->min,
+        ];
     }
 }
